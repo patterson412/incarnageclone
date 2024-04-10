@@ -10,17 +10,17 @@ This project is a clone of the Incarnage website, an athletic wear e-commerce pl
 
 ## Setup and Usage
 
-- Clone repo and setup environment var's for database and redis
+- Clone repo and setup environment var's for database, express session secret, redis
 
 ```
-# PostgreSQL
-POSTGRES_HOST=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-POSTGRES_DB=
-
-# Redis
+DB_USER=
+DB_HOST=
+DB_DATABASE=
+DB_PASSWORD=
+DB_PORT=
+SESSION_SECRET=
 REDIS_HOST=
+REDIS_PORT=
 REDIS_PASSWORD=
 ```
 
