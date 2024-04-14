@@ -22,6 +22,11 @@ function reducerFilters(state, action) {
             return { ...state, XL: !state.XL };
         case 'XXL':
             return { ...state, XXL: !state.XXL };
+        case 'T-shirts':
+            return { ...state, Tshirt: !state.Tshirt };
+        case 'bottom':
+            return { ...state, bottom: !state.bottom };
+
         default:
             return state;
 
@@ -39,6 +44,19 @@ function getSelectedSizes(checkedFiltersObject) {
         }
     }
     return selectedSizes;
+}
+
+function getSelectedCategories(checkedFiltersObject) {
+    const selectedCategories = [];
+    for (let category in checkedFiltersObject) {
+        if (category === 'Tshirt' || category === 'bottom') {
+            if (checkedFiltersObject[category]) {
+                selectedCategories.push(category);
+            }
+        }
+    }
+    console.log(selectedCategories);
+    return selectedCategories;
 }
 
 // Function to check if two arrays have any common elements
@@ -74,6 +92,9 @@ function ProductsLayout(props) {
         L: false,
         XL: false,
         XXL: false,
+
+        Tshirt: false,
+        bottom: false,
     });
 
 
@@ -81,36 +102,49 @@ function ProductsLayout(props) {
     async function fetchProducts() {
         const response = await axios.get('/products');
         if (response.data.length > 0) {
-            const filteredProducts = response.data.filter((item, index) => (
+            /*const filteredProducts = response.data.filter((item, index) => (
                 item.gender === props.gender
-            ));
-            setProducts(filteredProducts);
+            ));*/
 
-            if (checkedFilters.inStock) {
-                const filteredInStock = response.data.filter((item, index) => (
-                    item.gender === props.gender && item.stock > 0
-                ));
-                setProducts(filteredInStock);
-            }
-            if (checkedFilters.outOfStock) {
-                const filteredOutOfStock = response.data.filter((item, index) => (
-                    item.gender === props.gender && item.stock === 0
-                ));
-                setProducts(filteredOutOfStock);
-            }
-            if (checkedFilters.inStock && checkedFilters.outOfStock) {
-                setProducts(filteredProducts);
+            let filteredProducts = [...response.data];
+
+
+
+            // Filter based on selected categories
+            if (checkedFilters.Tshirt || checkedFilters.bottom) {
+                const selectedCategories = getSelectedCategories(checkedFilters);
+                filteredProducts = filteredProducts.filter(item =>
+                    selectedCategories.includes(item.category)
+                );
             }
 
+            // Apply other filters if necessary
             if (checkedFilters.XS || checkedFilters.S || checkedFilters.M || checkedFilters.L || checkedFilters.XL || checkedFilters.XXL) {
                 const selectedSizes = getSelectedSizes(checkedFilters);
-
-                const filteredSizes = response.data.filter(item => (
-                    item.gender === props.gender && intersects(selectedSizes, item.size.map(obj => Object.keys(obj)[0]))
-                ));
-                setProducts(filteredSizes);
+                filteredProducts = filteredProducts.filter(item =>
+                    intersects(selectedSizes, item.size.map(obj => Object.keys(obj)[0]))
+                );
             }
 
+            if (checkedFilters.inStock) {
+                filteredProducts = filteredProducts.filter(item =>
+                    item.stock > 0
+                );
+            }
+            if (checkedFilters.outOfStock) {
+                filteredProducts = filteredProducts.filter(item =>
+                    item.stock === 0
+                );
+            }
+
+            if (props.gender !== "all") {
+                filteredProducts = filteredProducts.filter(item =>
+                    item.gender === props.gender
+                );
+            }
+
+            // Finally, set the products
+            setProducts(filteredProducts);
 
         }
     }
@@ -255,7 +289,7 @@ function ProductsLayout(props) {
                                 </div>
                                 <div class="relative flex gap-x-3">
                                     <div class="flex h-6 items-center">
-                                        <input id="M" name="M" type="checkbox" checked={checkedFilters.M} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" onChange={() => dispatchCheckedFilters({ type: 'M' })}  />
+                                        <input id="M" name="M" type="checkbox" checked={checkedFilters.M} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" onChange={() => dispatchCheckedFilters({ type: 'M' })} />
                                     </div>
                                     <div class="text-sm leading-6">
                                         <label for="M" class="font-medium text-gray-900">M</label>
@@ -310,19 +344,19 @@ function ProductsLayout(props) {
                             <fieldset>
                                 <div class="relative flex gap-x-3">
                                     <div class="flex h-6 items-center">
-                                        <input id="tShirt" name="tops" type="radio" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        <input id="T-shirts" name="category" type="checkbox" checked={checkedFilters.Tshirt} onChange={() => dispatchCheckedFilters({ type: 'T-shirts' })} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                                     </div>
                                     <div class="text-sm leading-6">
-                                        <label for="tShirt" class="font-medium text-gray-900">T-shirts</label>
+                                        <label for="T-shirts" class="font-medium text-gray-900">T-shirts</label>
 
                                     </div>
                                 </div>
                                 <div class="relative flex gap-x-3">
                                     <div class="flex h-6 items-center">
-                                        <input id="shirt" name="tops" type="radio" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                        <input id="bottom" name="category" type="checkbox" checked={checkedFilters.bottom} onChange={() => dispatchCheckedFilters({ type: 'bottom' })} class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                                     </div>
                                     <div class="text-sm leading-6">
-                                        <label for="shirt" class="font-medium text-gray-900">Shirts</label>
+                                        <label for="bottom" class="font-medium text-gray-900">bottom</label>
 
                                     </div>
                                 </div>

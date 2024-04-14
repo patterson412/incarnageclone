@@ -88,6 +88,12 @@ function App() {
 
                                 <Route
                                     exact
+                                    path="/productsLayout/all"
+                                    element={<div><AuthCheck /><Nav /><ProductsLayout title="ALL" gender="all" /></div>}
+                                />
+
+                                <Route
+                                    exact
                                     path="/shoppingcart"
                                     element={<div><AuthCheck /><Nav /><ShopCart /></div>}
                                 />
