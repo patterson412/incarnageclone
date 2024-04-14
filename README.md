@@ -52,7 +52,6 @@ The following features are planned for future implementation:
 - Make authentication a choice, instead of mandatory
 - Implement sign-in with Google
 - Use the checkRole function in the server file to implement administrative access
-- Implement the last sorting option (Radio)
 - Implement the functionality of the "Shop Now" button on the home page
 - Implement the "You may also like" section on the product pages
 - Implement detailed product descriptions and information
